@@ -1,24 +1,33 @@
-# core/urls.py
+"""
+URL configuration for aras project.
+"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
+from django.views.generic.base import RedirectView  # <-- EKLE
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # Giriş sonrası hedef (index) → duzeltme:home
+    # /index/ -> duzeltme:ozet (vendor/yıl default)
+    # login olduğun zaman yönlendirilecek sayfa belirliyoruz 
+    # account/views.py/ def login_request(request): fonksiyonundan yönlendiriyoruz
     path(
         "index/",
-        RedirectView.as_view(pattern_name="duzeltme:home", permanent=False),
+        RedirectView.as_view(
+            pattern_name="duzeltme:ozet",
+            permanent=False
+        ),
+        {"vendor": "inavitas", "year": 2022},   # <-- default hedef
         name="index",
     ),
 
-    # Login/logout
+    # Login & logout (account.urls içinde name="login" mevcut)
     path("", include("account.urls")),
 
-    # Düzeltme uygulaması
+    # Diğer app’ler
+    # path("rapor/", include(("rapor.urls", "rapor"), namespace="rapor")),
     path("duzeltme/", include(("duzeltme.urls", "duzeltme"), namespace="duzeltme")),
 ]
 
